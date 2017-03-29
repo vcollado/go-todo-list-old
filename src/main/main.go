@@ -11,23 +11,17 @@ type task struct {
 	// todo... add field issuedAt
 }
 
-var tasksLimitCount int = 10
-var tasksCount int
-
 func addTask(tasks *chan task, name string, description string, isDone bool) {
-	tasksCount++
-	*tasks <- task{name: name, description: description, isDone: isDone}
-
-	if tasksCount == tasksLimitCount {
-		// close(tasks)
-	}
+	*tasks <- task{name, description, isDone}
 }
 
 func main() {
 
-	tasks := make(chan task, tasksLimitCount)
+	tasks := make(chan task, 2)
 
-	addTask(&tasks, "this is the name of the task", "this is the description of the task", false)
+	addTask(&tasks, "first task", "this is the description of the first task", false)
+	addTask(&tasks, "second task", "today we are programming in go", false)
+	close(tasks)
 
 	for task := range tasks {
 		fmt.Println(task)
