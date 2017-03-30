@@ -2,31 +2,30 @@ package main
 
 import (
 	"fmt"
+	"lib"
 	"log"
 )
 
-type task struct {
-	name        string
-	description string
-	isDone      bool
-}
-
-func addTask(tasks *chan *task, name string, description string, isDone bool) {
+func addTask(tasks *chan *lib.Task, name string, description string, done bool) {
 	fmt.Println("adding the task, please wait...")
-	*tasks <- &task{name, description, isDone}
+	*tasks <- &lib.Task{Name: name, Description: description, Done: done}
 }
 
 func main() {
 
-	tasks := make(chan *task)
+	tasks := make(chan *lib.Task)
 
-	go addTask(&tasks, "first task", "this is the description of the first task", false)
+	go addTask(&tasks, "first task", "this is the description of the first task", true)
 	go addTask(&tasks, "second task", "today we are programming in go", false)
 
 	for i := 0; i <= 1; i++ {
 		select {
 		case task := <-tasks:
 			log.Print("task added: ", task)
+			if task.IsDone() {
+				log.Print("and its done")
+			}
 		}
 	}
+
 }
