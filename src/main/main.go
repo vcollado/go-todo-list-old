@@ -12,6 +12,7 @@ func taskListener(listenerId int, tasksToListenOver <-chan lib.Task, tasksEvents
 		// let the others listeners to read it
 		time.Sleep(time.Second * 1)
 		// respond to the event with the recently added task
+		// this will be listened from receiveTaskListener
 		tasksEvents <- task
 	}
 }
@@ -23,7 +24,7 @@ func receiveTaskListener(tasksEventsToReceive chan lib.Task, tasksAddedCount int
 	}
 }
 
-func addTask(tasks chan<- lib.Task, name string, description string, done bool) {
+func addTask(tasks chan<- lib.Task, name, description string, done bool) {
 	taskToAdd := lib.Task{Name: name, Description: description, Done: done}
 	tasks <- taskToAdd
 }
@@ -42,6 +43,7 @@ func main() {
 	addTask(tasks, "second task", "today we are programming in go", false)
 	addTask(tasks, "last task", "some goroutines are made", true)
 
+	// todo.. mutex to access the tasks between goroutines
 	receiveTaskListener(tasksEvents, len(tasks))
 }
 
